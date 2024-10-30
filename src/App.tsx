@@ -18,7 +18,12 @@ function App() {
         <Form.Control value={query} onChange={(e) => setQuery(e.target.value)} />
       </Form.Group>
 
-      <Tree data={mockData} query={query} onItemClick={handleNodeClick} />
+      <Tree 
+        data={mockData} 
+        query={query} 
+        onNodeClick={handleNodeClick} 
+        initialOpenNodes={['Cat Family', 'Gorillas']} 
+      />
     </Container>
   )
 }

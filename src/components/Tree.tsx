@@ -21,33 +21,38 @@ export interface ITreeNode {
 /**
  * Props for Tree component.
  * - `data`: Node data to be rendered in the tree structure.
- * - `searchQuery`: Optional string for searching/filtering nodes.
+ * - `query`: Optional string for searching/filtering nodes.
+ * - `onNodeClick`: Optional node onClick handler.
+ * - `initialOpenNodes`: Optional array of nodes what should be open by name or common_name.
  */
 interface ITreeProps {
   data: ITreeNode[];
   query?: string;
-  onItemClick?: (node: ITreeNode) => void;
+  onNodeClick?: (node: ITreeNode) => void;
+  initialOpenNodes?: string[];
 }
 
-function Tree({ data, query, onItemClick } : ITreeProps) {
+function Tree({ data, query, onNodeClick, initialOpenNodes = [] } : ITreeProps) {
   return (
     <ListGroup>
       {data.map((item: ITreeNode) =>
-        <TreeNode node={item} key={item.name} query={query} onItemClick={onItemClick}/>
+        <TreeNode node={item} key={item.name} query={query} onNodeClick={onNodeClick} initialOpenNodes={initialOpenNodes}/>
       )}
     </ListGroup>
   )
 }
 
 /**
- * Props for Tree Item Component.
+ * Props for Tree Node Component.
  * - `node`: ITreeNode data to be rendered in the tree structure.
  * - `query`: Optional string for searching/filtering nodes.
+ * - `onNodeClick`: Optional node onClick handler.
  */
 interface ITreeNodeProps {
   node: ITreeNode;
   query?: string;
-  onItemClick?: (node: ITreeNode) => void;
+  onNodeClick?: (node: ITreeNode) => void;
+  initialOpenNodes?: string[];
 }
 const filterTree = (node:ITreeNode, query:string): boolean => {
   if(
@@ -60,7 +65,7 @@ const filterTree = (node:ITreeNode, query:string): boolean => {
   return false
 }
 
-export function TreeNode({ node, query, onItemClick } : ITreeNodeProps) {
+export function TreeNode({ node, query, onNodeClick, initialOpenNodes } : ITreeNodeProps) {
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
     if (query) {
@@ -68,7 +73,12 @@ export function TreeNode({ node, query, onItemClick } : ITreeNodeProps) {
     } else {
       setIsOpen(false);
     }
-  }, [query, node]);
+    
+    // Update the open state based on initialOpenNodes
+    if (initialOpenNodes && initialOpenNodes.includes(node.common_name)) {
+      setIsOpen(true);
+    }
+  }, [query, node, initialOpenNodes]);
 
   const matchesQuery = query && (
     node.name.toLowerCase().includes(query.toLowerCase()) || node.common_name.toLowerCase().includes(query.toLowerCase())
@@ -78,8 +88,8 @@ export function TreeNode({ node, query, onItemClick } : ITreeNodeProps) {
   if (query && !filterTree(node, query)) return null;
 
   const handleItenClick = () => {
-    if (onItemClick) {
-      onItemClick(node); 
+    if (onNodeClick) {
+      onNodeClick(node); 
     }
     setIsOpen(!isOpen)
   }
@@ -98,7 +108,7 @@ export function TreeNode({ node, query, onItemClick } : ITreeNodeProps) {
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
-        <TreeNode node={item} key={item.name} query={query} onItemClick={onItemClick}/>
+        <TreeNode node={item} key={item.name} query={query} onNodeClick={onNodeClick}  initialOpenNodes={initialOpenNodes}/>
       )}
     </div>
   </>
