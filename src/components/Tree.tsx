@@ -66,13 +66,18 @@ function TreeItem({ node, query } : ITreeItemProps) {
       setIsOpen(false);
     }
   }, [query, node]);
-
+  
+  const matchesQuery = query && (
+    node.name.toLowerCase().includes(query.toLowerCase()) || node.common_name.toLowerCase().includes(query.toLowerCase())
+  );
+  console.log(matchesQuery, node.name);
+  
   // Skip rendering nodes that don't match the search
   if (query && !filterTree(node, query)) return null;
 
   return <>
     <div className="TreeItem">
-      <ListGroupItem  onClick={() => setIsOpen(!isOpen)} >
+      <ListGroupItem  onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
         <span className="pe-2">
           {node.children && (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />)}
         </span>
@@ -81,7 +86,7 @@ function TreeItem({ node, query } : ITreeItemProps) {
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
-        <TreeItem node={item} key={item.name} />
+        <TreeItem node={item} key={item.name} query={query}/>
       )}
     </div>
   </>
