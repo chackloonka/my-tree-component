@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { ITreeNode } from './components/Tree'
 
 function App() {
-  const [query, setQuery] = useState("");
+  const [searchQuery, setsearchQuery] = useState("");
   const handleNodeClick = (node: ITreeNode) => {
     alert(`You clicked on: ${node.name} (${node.common_name})`);
   };
@@ -15,12 +15,12 @@ function App() {
       <h1 className="my-4">Tree Prototype</h1>
       <Form.Group className='my-3'>
         <Form.Label>Search</Form.Label>
-        <Form.Control value={query} onChange={(e) => setQuery(e.target.value)} />
+        <Form.Control value={searchQuery} onChange={(e) => setsearchQuery(e.target.value)} />
       </Form.Group>
 
       <Tree 
         data={mockData} 
-        query={query} 
+        searchQuery={searchQuery} 
         onNodeClick={handleNodeClick} 
         initialOpenNodes={['Cat Family', 'Gorillas']} 
       />

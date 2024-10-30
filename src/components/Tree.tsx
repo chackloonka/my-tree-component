@@ -19,24 +19,24 @@ export interface ITreeNode {
   children?: ITreeNode[];
 }
 /**
- * Props for Tree component.
+ * Props for Tree Component.
  * - `data`: Node data to be rendered in the tree structure.
- * - `query`: Optional string for searching/filtering nodes.
+ * - `searchQuery`: Optional string for searching/filtering nodes.
  * - `onNodeClick`: Optional node onClick handler.
  * - `initialOpenNodes`: Optional array of nodes what should be open by name or common_name.
  */
 interface ITreeProps {
   data: ITreeNode[];
-  query?: string;
+  searchQuery?: string;
   onNodeClick?: (node: ITreeNode) => void;
   initialOpenNodes?: string[];
 }
 
-function Tree({ data, query, onNodeClick, initialOpenNodes = [] } : ITreeProps) {
+function Tree({ data, searchQuery, onNodeClick, initialOpenNodes = [] } : ITreeProps) {
   return (
     <ListGroup>
       {data.map((item: ITreeNode) =>
-        <TreeNode node={item} key={item.name} query={query} onNodeClick={onNodeClick} initialOpenNodes={initialOpenNodes}/>
+        <TreeNode node={item} key={item.name} searchQuery={searchQuery} onNodeClick={onNodeClick} initialOpenNodes={initialOpenNodes}/>
       )}
     </ListGroup>
   )
@@ -45,31 +45,32 @@ function Tree({ data, query, onNodeClick, initialOpenNodes = [] } : ITreeProps) 
 /**
  * Props for Tree Node Component.
  * - `node`: ITreeNode data to be rendered in the tree structure.
- * - `query`: Optional string for searching/filtering nodes.
+ * - `searchQuery`: Optional string for searching/filtering nodes.
  * - `onNodeClick`: Optional node onClick handler.
  */
 interface ITreeNodeProps {
   node: ITreeNode;
-  query?: string;
+  searchQuery?: string;
   onNodeClick?: (node: ITreeNode) => void;
   initialOpenNodes?: string[];
 }
-const filterTree = (node:ITreeNode, query:string): boolean => {
+const filterTree = (node:ITreeNode, searchQuery:string): boolean => {
   if(
-    node.common_name.toLowerCase().includes(query.toLowerCase()) ||
-    node.name.toLowerCase().includes(query.toLowerCase()) 
+    node.common_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    node.name.toLowerCase().includes(searchQuery.toLowerCase()) 
   ) return true;
   if(node.children) {
-    return node.children.some((child) => filterTree(child, query))
+    return node.children.some((child) => filterTree(child, searchQuery))
   }
   return false
 }
 
-export function TreeNode({ node, query, onNodeClick, initialOpenNodes } : ITreeNodeProps) {
+export function TreeNode({ node, searchQuery, onNodeClick, initialOpenNodes } : ITreeNodeProps) {
   const [isOpen, setIsOpen] = useState(false)
+
   useEffect(() => {
-    if (query) {
-      setIsOpen(filterTree(node, query));
+    if (searchQuery) {
+      setIsOpen(filterTree(node, searchQuery));
     } else {
       setIsOpen(false);
     }
@@ -78,14 +79,14 @@ export function TreeNode({ node, query, onNodeClick, initialOpenNodes } : ITreeN
     if (initialOpenNodes && initialOpenNodes.includes(node.common_name)) {
       setIsOpen(true);
     }
-  }, [query, node, initialOpenNodes]);
+  }, [searchQuery, node, initialOpenNodes]);
 
-  const matchesQuery = query && (
-    node.name.toLowerCase().includes(query.toLowerCase()) || node.common_name.toLowerCase().includes(query.toLowerCase())
+  const matchessearchQuery = searchQuery && (
+    node.name.toLowerCase().includes(searchQuery.toLowerCase()) || node.common_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   // Skip rendering nodes that don't match the search
-  if (query && !filterTree(node, query)) return null;
+  if (searchQuery && !filterTree(node, searchQuery)) return null;
 
   const handleItenClick = () => {
     if (onNodeClick) {
@@ -98,7 +99,7 @@ export function TreeNode({ node, query, onNodeClick, initialOpenNodes } : ITreeN
       <ListGroupItem 
         action={!!node?.children} 
         onClick={handleItenClick} 
-        active={matchesQuery} 
+        active={matchessearchQuery} 
       >
         <span className="pe-2 text-warning">
           {node.children ? (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />) : <FaRegFile />}
@@ -108,7 +109,7 @@ export function TreeNode({ node, query, onNodeClick, initialOpenNodes } : ITreeN
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
-        <TreeNode node={item} key={item.name} query={query} onNodeClick={onNodeClick}  initialOpenNodes={initialOpenNodes}/>
+        <TreeNode node={item} key={item.name} searchQuery={searchQuery} onNodeClick={onNodeClick}  initialOpenNodes={initialOpenNodes}/>
       )}
     </div>
   </>

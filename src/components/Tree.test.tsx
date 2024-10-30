@@ -95,7 +95,7 @@ describe("TreeNode", () => {
   })
 
   test('hightlights and expands nodes the match search query', () => {
-    render(<TreeNode node={sampleNodeData} query="Domestic Cat"/>)
+    render(<TreeNode node={sampleNodeData} searchQuery="Domestic Cat"/>)
     const highlightedNode = screen.getByText("Domestic Cat aka Felis catus").parentElement;
     expect(highlightedNode).toBeInTheDocument();
     expect(highlightedNode).toHaveClass("list-group-item active");
