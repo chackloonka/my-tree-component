@@ -3,6 +3,7 @@ import { ListGroup, ListGroupItem } from "react-bootstrap";
 import {
   FaRegFolder,
   FaRegFolderOpen,
+  FaRegFile
 } from "react-icons/fa";
 /**
  * ITreeNode:
@@ -66,23 +67,22 @@ function TreeItem({ node, query } : ITreeItemProps) {
       setIsOpen(false);
     }
   }, [query, node]);
-  
+
   const matchesQuery = query && (
     node.name.toLowerCase().includes(query.toLowerCase()) || node.common_name.toLowerCase().includes(query.toLowerCase())
   );
-  console.log(matchesQuery, node.name);
   
   // Skip rendering nodes that don't match the search
   if (query && !filterTree(node, query)) return null;
 
   return <>
     <div className="TreeItem">
-      <ListGroupItem  onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
-        <span className="pe-2">
-          {node.children && (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />)}
+      <ListGroupItem action={!!node.children} onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
+        <span className="pe-2 text-warning">
+          {node.children ? (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />) : <FaRegFile />}
         </span>
         <span>
-          {node.taxon} "{node.common_name} aka {node.name}"
+          {node.common_name} aka {node.name}
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
