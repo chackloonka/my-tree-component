@@ -58,7 +58,7 @@ const filterTree = (node:ITreeNode, query:string): boolean => {
   return false
 }
 
-function TreeItem({ node, query } : ITreeItemProps) {
+export function TreeItem({ node, query } : ITreeItemProps) {
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
     if (query) {
