@@ -26,13 +26,14 @@ interface ITreeNode {
 interface ITreeProps {
   data: ITreeNode[];
   query?: string;
+  onItemClick?: (node: ITreeNode) => void;
 }
 
-function Tree({ data, query } : ITreeProps) {
+function Tree({ data, query, onItemClick } : ITreeProps) {
   return (
     <ListGroup>
       {data.map((item: ITreeNode) =>
-        <TreeItem node={item} key={item.name} query={query}/>
+        <TreeItem node={item} key={item.name} query={query} onItemClick={onItemClick}/>
       )}
     </ListGroup>
   )
@@ -46,6 +47,7 @@ function Tree({ data, query } : ITreeProps) {
 interface ITreeItemProps {
   node: ITreeNode;
   query?: string;
+  onItemClick?: (node: ITreeNode) => void;
 }
 const filterTree = (node:ITreeNode, query:string): boolean => {
   if(
@@ -58,7 +60,7 @@ const filterTree = (node:ITreeNode, query:string): boolean => {
   return false
 }
 
-export function TreeItem({ node, query } : ITreeItemProps) {
+export function TreeItem({ node, query, onItemClick } : ITreeItemProps) {
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
     if (query) {
@@ -75,9 +77,19 @@ export function TreeItem({ node, query } : ITreeItemProps) {
   // Skip rendering nodes that don't match the search
   if (query && !filterTree(node, query)) return null;
 
+  const handleItenClick = () => {
+    if (onItemClick) {
+      onItemClick(node); 
+    }
+    setIsOpen(!isOpen)
+  }
   return <>
     <div className="TreeItem">
-      <ListGroupItem action={!!node?.children} onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
+      <ListGroupItem 
+        action={!!node?.children} 
+        onClick={handleItenClick} 
+        active={matchesQuery} 
+      >
         <span className="pe-2 text-warning">
           {node.children ? (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />) : <FaRegFile />}
         </span>
@@ -86,7 +98,7 @@ export function TreeItem({ node, query } : ITreeItemProps) {
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
-        <TreeItem node={item} key={item.name} query={query}/>
+        <TreeItem node={item} key={item.name} query={query} onItemClick={onItemClick}/>
       )}
     </div>
   </>
