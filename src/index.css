@@ -1,6 +1,6 @@
-.TreeItem>.TreeItem>.list-group-item {
+.TreeNode>.TreeNode>.list-group-item {
   padding-left: 40px;
 }
-.TreeItem>.TreeItem>.TreeItem>.list-group-item {
+.TreeNode>.TreeNode>.TreeNode>.list-group-item {
   padding-left: 80px;
 }

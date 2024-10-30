@@ -12,7 +12,7 @@ import {
  * - `common_name`: Common name of the taxon.
  * - `children`: Optional array of child ITreeNodes.
  */
-interface ITreeNode {
+export interface ITreeNode {
   taxon: "Family" | "Genus" | "Species";
   name: string;
   common_name: string;
@@ -33,7 +33,7 @@ function Tree({ data, query, onItemClick } : ITreeProps) {
   return (
     <ListGroup>
       {data.map((item: ITreeNode) =>
-        <TreeItem node={item} key={item.name} query={query} onItemClick={onItemClick}/>
+        <TreeNode node={item} key={item.name} query={query} onItemClick={onItemClick}/>
       )}
     </ListGroup>
   )
@@ -44,7 +44,7 @@ function Tree({ data, query, onItemClick } : ITreeProps) {
  * - `node`: ITreeNode data to be rendered in the tree structure.
  * - `query`: Optional string for searching/filtering nodes.
  */
-interface ITreeItemProps {
+interface ITreeNodeProps {
   node: ITreeNode;
   query?: string;
   onItemClick?: (node: ITreeNode) => void;
@@ -60,7 +60,7 @@ const filterTree = (node:ITreeNode, query:string): boolean => {
   return false
 }
 
-export function TreeItem({ node, query, onItemClick } : ITreeItemProps) {
+export function TreeNode({ node, query, onItemClick } : ITreeNodeProps) {
   const [isOpen, setIsOpen] = useState(false)
   useEffect(() => {
     if (query) {
@@ -84,7 +84,7 @@ export function TreeItem({ node, query, onItemClick } : ITreeItemProps) {
     setIsOpen(!isOpen)
   }
   return <>
-    <div className="TreeItem">
+    <div className="TreeNode">
       <ListGroupItem 
         action={!!node?.children} 
         onClick={handleItenClick} 
@@ -98,7 +98,7 @@ export function TreeItem({ node, query, onItemClick } : ITreeItemProps) {
         </span>
       </ListGroupItem>
       {isOpen && node.children && node.children?.map(item =>
-        <TreeItem node={item} key={item.name} query={query} onItemClick={onItemClick}/>
+        <TreeNode node={item} key={item.name} query={query} onItemClick={onItemClick}/>
       )}
     </div>
   </>
