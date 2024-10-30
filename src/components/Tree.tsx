@@ -40,7 +40,7 @@ function Tree({ data, query } : ITreeProps) {
 
 /**
  * Props for Tree Item Component.
- * - `node`: Node data to be rendered in the tree structure.
+ * - `node`: ITreeNode data to be rendered in the tree structure.
  * - `query`: Optional string for searching/filtering nodes.
  */
 interface ITreeItemProps {
@@ -77,7 +77,7 @@ export function TreeItem({ node, query } : ITreeItemProps) {
 
   return <>
     <div className="TreeItem">
-      <ListGroupItem action={!!node.children} onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
+      <ListGroupItem action={!!node?.children} onClick={() => setIsOpen(!isOpen)} active={matchesQuery} >
         <span className="pe-2 text-warning">
           {node.children ? (isOpen ? <FaRegFolderOpen /> : <FaRegFolder />) : <FaRegFile />}
         </span>

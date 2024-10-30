@@ -2,9 +2,9 @@ import React from "react";
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, test, expect } from "vitest";
-import TreeItem from "./Tree";
+import {TreeItem} from "./Tree";
 
-const sampleData = [{
+const sampleNodeData = {
   "taxon": "Family",
   "name": "Felidae",
   "common_name": "Cat Family",
@@ -76,12 +76,29 @@ const sampleData = [{
       ]
     }
   ]
-}]
+}
 
 describe("TreeItem", () => {
   test('renders the treeItem structure correctly', () => {
-    render(<TreeItem data={sampleData}/>)
+    render(<TreeItem node={sampleNodeData}/>)
     expect(screen.getByText('Cat Family aka Felidae')).toBeInTheDocument()
+  })
+
+  test('expands and collapses nodes on click', () => {
+    render(<TreeItem node={sampleNodeData}/>)
+    expect(screen.queryByText("Small Cats aka Felis")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Cat Family aka Felidae'))
     expect(screen.getByText("Small Cats aka Felis")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Cat Family aka Felidae'))
+    expect(screen.queryByText("Small Cats aka Felis")).not.toBeInTheDocument()
+  })
+
+  test('hightlights and expands nodes the match search query', () => {
+    render(<TreeItem node={sampleNodeData} query="Domestic Cat"/>)
+    const highlightedNode = screen.getByText("Domestic Cat aka Felis catus").parentElement;
+    expect(highlightedNode).toBeInTheDocument();
+    expect(highlightedNode).toHaveClass("list-group-item active");
   })
 })
